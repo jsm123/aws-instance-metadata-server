@@ -1,0 +1,94 @@
+#!/bin/bash
+#
+# search-saved-web Simple Java app.
+#
+# chkconfig: 345 80 20
+# description: Java app with web interface
+
+. /etc/rc.d/init.d/functions
+. /etc/profile # pull in JAVA_HOME
+name=aws-instance-metadata-server
+pidfile=/var/run/${name}.pid
+lockfile=/var/lock/subsys/${name}
+port=8080
+
+start() {
+  local result ARGS=() JAVA_OPTS=()
+  
+  echo -n "Starting ${name} ... "
+
+  if do_status >/dev/null ; then
+    echo "already running"
+    return 0
+  fi
+  
+  shopt -s nullglob # non-existant globs should disappear
+  for script in /etc/${name}.conf.d/*.sh; do
+    source ${script} || (failure && echo "Could not source '${script}'" && return 1)
+  done
+  shopt -u nullglob
+          
+  ulimit -n 16384
+  daemonize \
+    -l "${lockfile}" \
+    -p "${pidfile}" \
+    -u webadmin \
+    -c /data/is24/${name} \
+    -a \
+    -e /data/logs/${name}/application.log \
+    -o /data/logs/${name}/application.log \
+    -E PORT=${port} \
+    ${JAVA_HOME}/bin/java "${JAVA_OPTS[@]}" -jar /data/is24/${name}/application.jar "${ARGS[@]}"
+  result=$?
+  
+  if [ ${result} -eq 0 ]; then
+    waitForPort ${port} 60
+    result=$?
+  fi
+  
+  [ ${result} -eq 0 ] && success || failure
+  echo
+  return ${result}
+}
+
+waitForPort() {
+  local port=$1 tries=$2 
+  while [ ${tries} -gt 0 ] && ! nc -z localhost ${port} >/dev/null 2>&1; do 
+    tries=$((tries - 1)); 
+    sleep 1; 
+  done 
+  [ ${tries} -eq 0 ] && return 1 || return 0 
+}
+
+do_status() {
+  status -p ${pidfile} ${name}
+}
+
+stop() {
+  action "Stopping ${name} ... " killproc -p "${pidfile}" -d 60 ${name} && rm -f "${lockfile}"
+}
+
+case "$1" in
+  start)
+    start
+    ;;
+  stop)
+    stop
+    ;;
+  status)
+    do_status
+    ;;
+  restart)
+    stop
+    start
+    ;;
+  condrestart)
+    if do_status >/dev/null ; then
+      stop
+      start
+    fi
+    ;;
+  *)
+    echo "Usage: /etc/init.d/${name} {start|stop|status|restart|condrestart}" >&2
+    exit 2
+esac

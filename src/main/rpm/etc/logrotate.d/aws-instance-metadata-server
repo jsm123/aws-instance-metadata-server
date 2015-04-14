@@ -1,0 +1,9 @@
+/data/logs/aws-instance-metadata-server/application.log {
+ copytruncate
+ daily
+ rotate 7
+ compress
+ delaycompress
+ dateext
+ missingok
+}
