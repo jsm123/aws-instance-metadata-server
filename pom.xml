@@ -207,10 +207,10 @@
               <skip>${build.is.personal}</skip>
               <executable>repoclient</executable>
               <workingDirectory>
-                ${project.build.directory}/rpm/${rpm-artifact-name}/RPMS/noarch/
+                ${project.build.directory}/rpm/is24-${project.artifactId}/RPMS/noarch/
               </workingDirectory>
               <commandlineArgs>
-                uploadto ${rpm.repository} is24-${project.artifactId}-${rpm.version}-${rpm.release}.noarch.rpm
+                uploadto is24-tuv ${project.build.directory}/rpm/${project.artifactId}/RPMS/noarch/is24-${project.artifactId}-${rpm.version}-${rpm.release}.noarch.rpm
               </commandlineArgs>
             </configuration>
           </execution>
