@@ -8,6 +8,18 @@
   <artifactId>aws-instance-metadata-server</artifactId>
   <version>1.0-SNAPSHOT</version>
 
+  <name>AWS Instance Metadata Server</name>
+  <description>tbc.</description>
+  <url>https://github.com/ImmobilienScout24/aws-instance-metadata-server</url>
+
+  <licenses>
+    <license>
+      <name>Apache License, Version 2.0</name>
+      <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+      <distribution>repo</distribution>
+    </license>
+  </licenses>
+
   <parent>
     <groupId>org.springframework.boot</groupId>
     <artifactId>spring-boot-starter-parent</artifactId>
@@ -47,9 +59,9 @@
       <groupId>org.apache.commons</groupId>
       <artifactId>commons-lang3</artifactId>
     </dependency>
-    
-    
-    
+
+
+
     <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
